@@ -22,62 +22,92 @@
 
 using namespace vex;
 
-const float Kp = 5;
-const float setDistance = 11;
+// const float Kp = 5;
+// const float setDistance = 11;
+const double dist_cm_first = 120;
+const double dist_cm_second = 180;
+const int accuracy = 20;
+const int reflectivity_threshold = 50;
+const int vel = 40;
+
+const bool is_smart = true;
 
 const double wheel_circ_cm = 10.48 * 3.14159;
-const double turn_const = 0.05;
+const double turn_const = 0.02;
+
+const double turn_rad_cm = 92.7;
 
 void turn_custom(double percent, double distance_in, double turn_in);
+void follow_line(double distance_param);
+void find_next_line();
 
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  
-  // while (true){
-  //   // float error = rangeFinderFront.distance(inches) - setDistance;
-  //   // Brain.Screen.printAt(30, 30, "%f     \n", error);
-  //   // printf("Error = %g \n", error);
-  //   // leftMotor.setVelocity(Kp * error, rpm);
-  //   // rightMotor.setVelocity(Kp * error, rpm);
-  //   // leftMotor.spin(fwd);
-  //   // rightMotor.spin(fwd);
 
+  if(is_smart){
+    follow_line(dist_cm_first); // follows the line for a set distance
+
+    wait(.2, seconds);
     
+    find_next_line(); // turns until it finds the corner
 
-  // }
+    follow_line(dist_cm_second);
 
-  double dist_cm = 138;
+    wait(.2, seconds);
 
-  int accuracy = 20;
+    find_next_line();
+    
+    follow_line(dist_cm_first - 25.2);
 
-  for(int i = 0; i < accuracy; i++){
-    int32_t left_power = leftLineTracker.reflectivity();
-    int32_t right_power = rightLineTracker.reflectivity();
-
-    double turn_cm_param = (double)right_power - (double)left_power;
-
-    turn_custom(100, dist_cm / (double)accuracy, turn_cm_param * turn_const);
+  }else{
+    turn_custom(vel, dist_cm_first, 0);
+    wait(.2, seconds);
+    turn_custom(20, 0, -turn_rad_cm / 4);
+    wait(.2, seconds);
+    turn_custom(vel, dist_cm_second, 0);
+    wait(.2, seconds);
+    turn_custom(20, 0, -turn_rad_cm / 4);
+    wait(.2, seconds);
+    turn_custom(vel, dist_cm_first - 25.2, 0);
   }
   
 }
 
-void turn_custom(double percent, double distance_cm, double turn_cm){
+void turn_custom(double percent_set, double distance_cm, double turn_cm){
   double left_dist = distance_cm + turn_cm;
   double right_dist = distance_cm - turn_cm;
 
   double ratio = left_dist/right_dist;
   if(ratio > 1){
     ratio = 1/ ratio;
-    leftMotor.setVelocity(100, pct);
-    rightMotor.setVelocity(ratio * 100, pct);
+    leftMotor.setVelocity(percent_set, pct);
+    rightMotor.setVelocity(ratio * percent_set, pct);
   }else{
-    leftMotor.setVelocity(ratio * 100, pct);
-    rightMotor.setVelocity(100, pct);
+    leftMotor.setVelocity(ratio * percent_set, pct);
+    rightMotor.setVelocity(percent_set, pct);
   }
 
-  leftMotor.spinFor(forward, 360 * left_dist / wheel_circ_cm, degrees);
-  rightMotor.spinFor(forward, 360 * right_dist / wheel_circ_cm, degrees);
+  leftMotor.spinFor(reverse, 360 * left_dist / wheel_circ_cm, degrees, false);
+  rightMotor.spinFor(reverse, 360 * right_dist / wheel_circ_cm, degrees, true);
 
 }
+void follow_line(double distance_param){
+  for(int i = 0; i < accuracy; i++){
+    int32_t left_power = leftLineTracker.reflectivity();
+    int32_t right_power = rightLineTracker.reflectivity();
 
+    double turn_cm_param = (double)right_power - (double)left_power;
+
+    turn_custom(vel, distance_param / (double)accuracy, -turn_cm_param * turn_const);
+  }
+}
+
+void find_next_line(){
+  turn_custom(20, 0, turn_rad_cm / 5);
+  wait(.2, seconds);
+  while(leftLineTracker.reflectivity() > reflectivity_threshold){
+    rightMotor.spinFor(forward, 30, degrees);
+    wait(.2, seconds);
+  }
+}
