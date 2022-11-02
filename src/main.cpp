@@ -46,7 +46,7 @@ int main() {
   vexcodeInit();
 
   if(is_smart){
-    follow_line(dist_cm_first); // follows the line for a set distance
+    follow_line(dist_cm_first); // follows the line until 10 inches from a wall
 
     wait(.2, seconds);
     
@@ -93,13 +93,21 @@ void turn_custom(double percent_set, double distance_cm, double turn_cm){
 
 }
 void follow_line(double distance_param){
-  for(int i = 0; i < accuracy; i++){
+  // for(int i = 0; i < accuracy; i++){
+  //   int32_t left_power = leftLineTracker.reflectivity();
+  //   int32_t right_power = rightLineTracker.reflectivity();
+
+  //   double turn_cm_param = (double)right_power - (double)left_power;
+
+  //   turn_custom(vel, distance_param / (double)accuracy, -turn_cm_param * turn_const);
+  // }
+  while(rangeFinderFront.distance(inches) > 10.0){
     int32_t left_power = leftLineTracker.reflectivity();
     int32_t right_power = rightLineTracker.reflectivity();
-
-    double turn_cm_param = (double)right_power - (double)left_power;
-
-    turn_custom(vel, distance_param / (double)accuracy, -turn_cm_param * turn_const);
+    leftMotor.setVelocity(left_power, pct);
+    rightMotor.setVelocity(right_power, pct);
+    leftMotor.spin(forward);
+    rightMotor.spin(forward);
   }
 }
 

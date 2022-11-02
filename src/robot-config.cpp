@@ -8,8 +8,8 @@ using code = vision::code;
 brain  Brain;
 
 // VEXcode device constructors
-motor leftMotor = motor(PORT1, ratio18_1, false);
-motor rightMotor = motor(PORT10, ratio18_1, true);
+motor leftMotor = motor(PORT1, ratio18_1, true);
+motor rightMotor = motor(PORT10, ratio18_1, false);
 motor armMotor = motor(PORT8, ratio18_1, false);
 sonar rangeFinderFront = sonar(Brain.ThreeWirePort.A);
 line leftLineTracker = line(Brain.ThreeWirePort.C);
