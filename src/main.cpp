@@ -34,18 +34,18 @@ int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   
-  while (true){
-    // float error = rangeFinderFront.distance(inches) - setDistance;
-    // Brain.Screen.printAt(30, 30, "%f     \n", error);
-    // printf("Error = %g \n", error);
-    // leftMotor.setVelocity(Kp * error, rpm);
-    // rightMotor.setVelocity(Kp * error, rpm);
-    // leftMotor.spin(fwd);
-    // rightMotor.spin(fwd);
+  // while (true){
+  //   // float error = rangeFinderFront.distance(inches) - setDistance;
+  //   // Brain.Screen.printAt(30, 30, "%f     \n", error);
+  //   // printf("Error = %g \n", error);
+  //   // leftMotor.setVelocity(Kp * error, rpm);
+  //   // rightMotor.setVelocity(Kp * error, rpm);
+  //   // leftMotor.spin(fwd);
+  //   // rightMotor.spin(fwd);
 
     
 
-  }
+  // }
 
   double dist_cm = 138;
 
