@@ -46,39 +46,47 @@ int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
-  // if(is_smart){
-  //   follow_line(dist_cm_first); // follows the line until 10 inches from a wall
+  if(is_smart){
+    //Sensor Based Code
 
-  //   // wait(.2, seconds);
+    follow_line(dist_cm_first); // follows the line until 10 inches from a wall
+
+    wait(.2, seconds);
     
-  //   // find_next_line(); // turns until it finds the corner
+    find_next_line(); // turns until it finds the corner
 
-  //   // follow_line(dist_cm_second);
+    follow_line(dist_cm_second);
 
-  //   // wait(.2, seconds);
+    wait(.2, seconds);
 
-  //   // find_next_line();
+    find_next_line();
     
-  //   // follow_line(dist_cm_first - 25.2);
+    follow_line(dist_cm_first - 25.2);
 
-  // }else{
-  //   turn_custom(vel, dist_cm_first, 0);
-  //   wait(.2, seconds);
-  //   turn_custom(20, 0, -turn_rad_cm / 4);
-  //   wait(.2, seconds);
-  //   turn_custom(vel, dist_cm_second, 0);
-  //   wait(.2, seconds);
-  //   turn_custom(20, 0, -turn_rad_cm / 4);
-  //   wait(.2, seconds);
-  //   turn_custom(vel, dist_cm_first - 25.2, 0);
-  // }
-  while(true){
-    Controller1.Screen.print((int)rangeFinderFront.distance(inches));
-    wait(4, seconds);
+  }else{
+    // Dead Reckoning Code
+
+    turn_custom(vel, dist_cm_first, 0);
+    wait(.2, seconds);
+    turn_custom(20, 0, -turn_rad_cm / 4);
+    wait(.2, seconds);
+    turn_custom(vel, dist_cm_second, 0);
+    wait(.2, seconds);
+    turn_custom(20, 0, -turn_rad_cm / 4);
+    wait(.2, seconds);
+    turn_custom(vel, dist_cm_first - 25.2, 0);
   }
+  // LEFTOVER COODE FROM SENSOR DEBUGGING.
+  // while(true){
+  //   Controller1.Screen.print((int)rangeFinderFront.distance(inches));
+  //   wait(4, seconds);
+  // }
 }
 
 void turn_custom(double percent_set, double distance_cm, double turn_cm){
+  
+  // Turns given a speed, distance to cover, and distance to turn.
+
   double left_dist = distance_cm + turn_cm;
   double right_dist = distance_cm - turn_cm;
 
@@ -97,21 +105,14 @@ void turn_custom(double percent_set, double distance_cm, double turn_cm){
 
 }
 void follow_line(double distance_param){
-  // for(int i = 0; i < accuracy; i++){
-  //   int32_t left_power = leftLineTracker.reflectivity();
-  //   int32_t right_power = rightLineTracker.reflectivity();
 
-  //   double turn_cm_param = (double)right_power - (double)left_power;
+  // Follows the line until 10 inches away from a wall.
 
-  //   turn_custom(vel, distance_param / (double)accuracy, -turn_cm_param * turn_const);
-  // }
   while(rangeFinderFront.distance(inches) > 10.0){
 
-    
+    double proportionality = rangeFinderFront.distance(inches) / distance_param * Kp; // Division is there to keep the values between 0 and Kp, and making Kp more general. It also prevents the motors from being told to run over 100%.
 
-    double proportionality = rangeFinderFront.distance(inches) / distance_param * Kp; // Division is there to keep the values between 0 and Kp, and making Kp more general.
-
-    int32_t left_power = leftLineTracker.reflectivity(); // percent Value between 0 and 100, higher on the black lines, so when the values reduce, the robot turns.
+    int32_t left_power = leftLineTracker.reflectivity(); // percent Value between 0 and 100, higher on the black lines, so when the values reduce (meaning it's on white now), the robot turns in that direction to correct.
     int32_t right_power = rightLineTracker.reflectivity();
 
     leftMotor.spin(forward, ((float)left_power/2 + 50) * (float)proportionality, pct);
@@ -122,8 +123,13 @@ void follow_line(double distance_param){
 }
 
 void find_next_line(){
+
+  // Turns until it's about 72 degrees away from its previous orientation, and then continues to turnn until it's on a line again. This is to get it off of the previous line, and make it find the new one.
+
   turn_custom(20, 0, turn_rad_cm / 5);
+
   wait(.2, seconds);
+
   while(leftLineTracker.reflectivity() > reflectivity_threshold){
     rightMotor.spinFor(forward, 30, degrees);
     wait(.2, seconds);
