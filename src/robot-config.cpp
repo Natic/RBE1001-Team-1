@@ -11,10 +11,10 @@ brain  Brain;
 motor leftMotor = motor(PORT1, ratio18_1, true);
 motor rightMotor = motor(PORT10, ratio18_1, false);
 motor armMotor = motor(PORT8, ratio18_1, false);
-sonar rangeFinderFront = sonar(Brain.ThreeWirePort.A);
 line leftLineTracker = line(Brain.ThreeWirePort.C);
 line rightLineTracker = line(Brain.ThreeWirePort.D);
 controller Controller1 = controller(primary);
+sonar rangeFinderFront = sonar(Brain.ThreeWirePort.G);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

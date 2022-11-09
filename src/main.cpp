@@ -13,20 +13,19 @@
 // leftMotor            motor         1               
 // rightMotor           motor         10              
 // armMotor             motor         8               
-// rangeFinderFront     sonar         A, B            
 // leftLineTracker      line          C               
 // rightLineTracker     line          D               
 // Controller1          controller                    
+// rangeFinderFront     sonar         G, H            
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
-
 using namespace vex;
 
-const float Kp = 0.3;
+const float Kp = .6;
 // const float setDistance = 11;
-const double dist_cm_first = 120;
-const double dist_cm_second = 180;
+const double dist_cm_first = 120 / 2.5;
+const double dist_cm_second = 180 / 2.5;
 const int accuracy = 20;
 const int reflectivity_threshold = 50;
 const int vel = 40;
@@ -39,7 +38,7 @@ const double turn_const = 0.02;
 const double turn_rad_cm = 92.7;
 
 void turn_custom(double percent, double distance_in, double turn_in);
-void follow_line(double distance_param);
+void follow_line(double distance_param, double distance_two);
 void find_next_line();
 
 int main() {
@@ -49,19 +48,37 @@ int main() {
   if(is_smart){
     //Sensor Based Code
 
-    follow_line(dist_cm_first); // follows the line until 10 inches from a wall
+    rangeFinderFront.distance(inches);
 
-    wait(.2, seconds);
+    wait(4, seconds);
+
+    follow_line(dist_cm_first, 13.0); // follows the line until 12 inches from a wall
+
+    Brain.Screen.print("Done with First Edge\n");
+
+    wait(1, seconds);
     
     find_next_line(); // turns until it finds the corner
 
-    follow_line(dist_cm_second);
+    Brain.Screen.print("Done with First Corner\n");
 
-    wait(.2, seconds);
+    wait(1, seconds);
+
+    follow_line(dist_cm_second, 6.0);
+
+    Brain.Screen.print("Done with Second Edge\n");
+
+    wait(1, seconds);
 
     find_next_line();
     
-    follow_line(dist_cm_first - 25.2);
+    Brain.Screen.print("Done with Second Corner\n");
+
+    wait(1, seconds);
+    
+    follow_line(dist_cm_first, 10.0);
+
+    Brain.Screen.print("Done!");
 
   }else{
     // Dead Reckoning Code
@@ -78,7 +95,7 @@ int main() {
   }
   // LEFTOVER COODE FROM SENSOR DEBUGGING.
   // while(true){
-  //   Controller1.Screen.print((int)rangeFinderFront.distance(inches));
+  //   Brain.Screen.print(rangeFinderFront.distance(inches));
   //   wait(4, seconds);
   // }
 }
@@ -104,11 +121,11 @@ void turn_custom(double percent_set, double distance_cm, double turn_cm){
   rightMotor.spinFor(reverse, 360 * right_dist / wheel_circ_cm, degrees, true);
 
 }
-void follow_line(double distance_param){
+void follow_line(double distance_param, double distance_two){
 
   // Follows the line until 10 inches away from a wall.
 
-  while(rangeFinderFront.distance(inches) > 10.0){
+  while(rangeFinderFront.distance(inches) > distance_two){
 
     double proportionality = rangeFinderFront.distance(inches) / distance_param * Kp; // Division is there to keep the values between 0 and Kp, and making Kp more general. It also prevents the motors from being told to run over 100%.
 
@@ -126,12 +143,12 @@ void find_next_line(){
 
   // Turns until it's about 72 degrees away from its previous orientation, and then continues to turnn until it's on a line again. This is to get it off of the previous line, and make it find the new one.
 
-  turn_custom(20, 0, turn_rad_cm / 5);
+  turn_custom(20, 0, - turn_rad_cm / 5);
 
   wait(.2, seconds);
 
   while(leftLineTracker.reflectivity() > reflectivity_threshold){
-    rightMotor.spinFor(forward, 30, degrees);
+    rightMotor.spinFor(reverse, 60, degrees);
     wait(.2, seconds);
   }
 }
