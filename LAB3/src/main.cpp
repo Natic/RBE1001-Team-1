@@ -8,8 +8,8 @@
 // Vision               vision        5
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
-#define TARGET_POS 150
-#define TARGET_WIDTH 10
+const int TARGET_POS = 150;
+const int TARGET_WIDTH = 10;
 
 bool moving = false;
 
