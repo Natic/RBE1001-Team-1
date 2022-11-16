@@ -69,7 +69,7 @@ void visionControl()
     }
     else
     {
-      turnDrive(50);
+      turnDrive(50, 0);
     }
 
     vex::this_thread::sleep_for(50);
