@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "gamepasscracker": "plaintext",
+        "__bit_reference": "cpp",
+        "__string": "cpp",
+        "algorithm": "cpp",
+        "ios": "cpp",
+        "string": "cpp",
+        "type_traits": "cpp"
+    }
+}
