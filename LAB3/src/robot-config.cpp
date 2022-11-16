@@ -18,7 +18,7 @@ signature Vision__SIG_4 = signature (4, 0, 0, 0, 0, 0, 0, 3, 0);
 signature Vision__SIG_5 = signature (5, 0, 0, 0, 0, 0, 0, 3, 0);
 signature Vision__SIG_6 = signature (6, 0, 0, 0, 0, 0, 0, 3, 0);
 signature Vision__SIG_7 = signature (7, 0, 0, 0, 0, 0, 0, 3, 0);
-vision vision = vision (PORT5, 50, Camera__RED_BALL, Camera__BLUE_BALL); 
+vision Vision = vision (PORT5, 50, Camera__RED_BALL, Camera__BLUE_BALL); 
 /*vex-vision-config:end*/
 
 // VEXcode generated functions
