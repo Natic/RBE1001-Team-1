@@ -9,7 +9,7 @@
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 const int TARGET_POS = 150;
-const int TARGET_WIDTH = 10;
+const int TARGET_WIDTH = 40;
 
 bool moving = false;
 
@@ -31,7 +31,7 @@ void visionControl()
   while (1)
   {
 
-    int numberObjects = Vision.takeSnapshot(REDBALL);
+    int numberObjects = Vision.takeSnapshot(Camera__RED_BALL);
 
     if (numberObjects > 0)
     {
@@ -44,10 +44,10 @@ void visionControl()
         int front_error = obj.width - TARGET_WIDTH;
 
         int turn_spd = side_error;
-        if (turn_spd > 50)
-          turn_spd = 50;
-        if (turn_spd < -50)
-          turn_spd = -50;
+        if (turn_spd > 10)
+          turn_spd = 10;
+        if (turn_spd < -10)
+          turn_spd = -10;
 
         if (obj.centerY > (TARGET_POS - 15) && obj.centerY < (TARGET_POS + 15) && obj.width > (TARGET_WIDTH - 10) && obj.width < (TARGET_WIDTH + 10))
         {
@@ -55,7 +55,7 @@ void visionControl()
         }
         else if (obj.centerY > (TARGET_POS - 15) && obj.centerY < (TARGET_POS + 15))
         {
-          turnDrive(0, front_error * 7);
+          turnDrive(0, front_error * 2);
         }
         else if (obj.width > (TARGET_WIDTH - 10) && obj.width < (TARGET_WIDTH + 10))
         {
@@ -69,7 +69,7 @@ void visionControl()
     }
     else
     {
-      turnDrive(50, 0);
+      turnDrive(10, 0);
     }
 
     vex::this_thread::sleep_for(50);
