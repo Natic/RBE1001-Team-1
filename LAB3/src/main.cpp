@@ -1,3 +1,10 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// leftDriveMotor       motor         1               
+// rightDriveMotor      motor         10              
+// Vision               vision        5               
+// ---- END VEXCODE CONFIGURED DEVICES ----
 #include "vex.h"
 
 // ---- START VEXCODE CONFIGURED DEVICES ----
@@ -9,7 +16,7 @@
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 const int TARGET_POS = 150;
-const int TARGET_WIDTH = 40;
+const int TARGET_WIDTH = 60;
 
 bool moving = false;
 
@@ -23,7 +30,7 @@ void turnDrive(int turn, int move)
   else
     moving = false;
   leftDriveMotor.spin(fwd, leftDrive, pct);
-  rightDriveMotor.spin(reverse, rightDrive, pct);
+  rightDriveMotor.spin(fwd, rightDrive, pct);
 }
 
 void visionControl()
@@ -31,7 +38,7 @@ void visionControl()
   while (1)
   {
 
-    int numberObjects = Vision.takeSnapshot(Camera__RED_BALL);
+    int numberObjects = Vision.takeSnapshot(Vision__SIG_1);
 
     if (numberObjects > 0)
     {
@@ -49,13 +56,13 @@ void visionControl()
         if (turn_spd < -10)
           turn_spd = -10;
 
-        if (obj.centerY > (TARGET_POS - 15) && obj.centerY < (TARGET_POS + 15) && obj.width > (TARGET_WIDTH - 10) && obj.width < (TARGET_WIDTH + 10))
+        if (obj.centerY > (TARGET_POS - 5) && obj.centerY < (TARGET_POS + 5) && obj.width > (TARGET_WIDTH - 5) && obj.width < (TARGET_WIDTH + 5))
         {
           turnDrive(0, 0);
         }
         else if (obj.centerY > (TARGET_POS - 15) && obj.centerY < (TARGET_POS + 15))
         {
-          turnDrive(0, front_error * 2);
+          turnDrive(0,-front_error / 4);
         }
         else if (obj.width > (TARGET_WIDTH - 10) && obj.width < (TARGET_WIDTH + 10))
         {
@@ -63,7 +70,7 @@ void visionControl()
         }
         else
         {
-          turnDrive(turn_spd, front_error * 7);
+          turnDrive(turn_spd, -front_error /4);
         }
       }
     }
